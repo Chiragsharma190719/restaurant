@@ -109,4 +109,20 @@ const logoutUser = (req, res) => {
 };
 
 
-export { generateToken, registerUser, loginUser, logoutUser, adminLogin };
+// Get user profile
+const getProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select("-password");
+        if(!user){
+            return res.status(404).json({ message: "User not found", success: false });
+        } 
+        res.json({ user, success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" , success: false });
+    }
+};
+
+
+
+export { generateToken, registerUser, loginUser, logoutUser, adminLogin, getProfile };

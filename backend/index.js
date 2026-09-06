@@ -1,9 +1,15 @@
+console.log("🔥 THIS IS MY RESTAURANT BACKEND 🔥");
+
+
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
+import connectCloudinary from "./config/cloudinary.js";
 import authRoutes from "./routes/authRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
+import menuRoutes from "./routes/menuRoutes.js";
 
 dotenv.config();
 
@@ -11,14 +17,20 @@ const app = express();
 
 // Database Connection
 connectDB();
+connectCloudinary();
 
 // Middleware
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+console.log("Registering menu routes...");
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/category", categoryRoutes);
+app.use("/api/menu", menuRoutes);
 
 app.get("/", (req, res) => {
     res.send("Hello World!");
