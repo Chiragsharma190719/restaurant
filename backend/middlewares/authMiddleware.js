@@ -1,6 +1,9 @@
 import jwt from "jsonwebtoken";
 export const protect = (req, res, next) => {
-    const token = req.cookies.token;
+    let token = req.cookies.token;
+    if (!token && req.headers.authorization?.startsWith("Bearer ")) {
+        token = req.headers.authorization.split(" ")[1];
+    }
     if (!token) {
         return res.status(401).json({ message: "Not Authorized", success: false });
     }
@@ -23,6 +26,8 @@ export const adminOnly = (req, res, next) => {
         req.admin = decoded;
         if (req.admin.email === process.env.ADMIN_EMAIL) {
             next(); 
+        } else {
+            return res.status(403).json({ message: "Access denied. Admins only.", success: false });
         }
     } catch (error) {
         return res.status(401).json({ message: "Invalid token" }); 

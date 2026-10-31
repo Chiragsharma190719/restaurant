@@ -4,8 +4,18 @@ import { v2 as cloudinary } from "cloudinary";
 export const addMenuItem = async (req, res) => {
     try {
         const { name, description, price, category } = req.body;
+        console.log("Request body:", req.body);
+        console.log("File:", req.file);
+        
         if (!name || !description || !price || !category || !req.file) {
-            return res.status(400).json({ message: "All fields are required", success: false });
+            const missingFields = [];
+            if (!name) missingFields.push("name");
+            if (!description) missingFields.push("description");
+            if (!price) missingFields.push("price");
+            if (!category) missingFields.push("category");
+            if (!req.file) missingFields.push("image");
+            console.log("Missing fields:", missingFields);
+            return res.status(400).json({ message: "All fields are required", success: false, missingFields });
         }
         const result = await cloudinary.uploader.upload(req.file.path);
 

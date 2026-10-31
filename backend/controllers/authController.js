@@ -56,10 +56,11 @@ const loginUser = async (req, res) => {
             return res.json({ message: "Invalid password", success: false });
         }
         
-        generateToken(res, { id: user._id, role: user.isAdmin ? "admin" : "user" });
+        const token = generateToken(res, { id: user._id, role: user.isAdmin ? "admin" : "user" });
         res.json({ 
             message: "User logged in successfully", 
             success: true,
+            token,
             user: {
                 name: user.name,
                 email: user.email
@@ -90,7 +91,7 @@ const adminLogin = async (req, res) => {
             sameSite: "strict",
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
-        return res.json({ message: "Admin logged in successfully", success: true }); 
+        return res.json({ success:true, message: "Admin logged in successfully", admin:{admin:adminEmail} }); 
     } catch (error) {
         console.error(error);
         return res.json({ message: "Internal server error", success: false });
@@ -123,6 +124,17 @@ const getProfile = async (req, res) => {
     }
 };
 
+// Get user => no logout
+const isAuth = async (req, res) => {
+    try{
+        const {id} = req.user;
+        const user = await User.findById(id).select("-password");
+        res.json({ user, success: true });
+    } catch (error) {
+        console.error(error);
+        return res.json({ message: "Internal server error", success: false });
+    }
+}
 
 
-export { generateToken, registerUser, loginUser, logoutUser, adminLogin, getProfile };
+export { generateToken, registerUser, loginUser, logoutUser, adminLogin, getProfile, isAuth };

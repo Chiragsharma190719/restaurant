@@ -1,5 +1,4 @@
 import express from "express";
-console.log("menuRoutes.js loaded");
 import { adminOnly } from "../middlewares/authMiddleware.js";
 import upload from "../middlewares/multer.js";
 import { addMenuItem, deleteMenuItem, getAllMenuItems, updateMenuItem } from "../controllers/menuController.js";
