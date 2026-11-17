@@ -10,6 +10,7 @@ import menuRoutes from "./routes/menuRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 console.log("Registering menu routes...");
+console.log("Registering cart routes...");
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -37,6 +39,9 @@ app.use("/api/menu", menuRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/booking", bookingRoutes);
+app.use("/api/admin", adminRoutes);
+
+console.log("All routes registered");
 
 app.get("/", (req, res) => {
     res.send("Hello World!");

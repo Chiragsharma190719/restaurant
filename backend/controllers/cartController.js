@@ -4,10 +4,14 @@ import Menu from "../models/menuModel.js";
 // Add item to cart
 export const addToCart = async (req, res) => {
     try {
-        const { menuItemId, quantity } = req.body;
+        const { menuId, quantity } = req.body;
         const { id } = req.user;
 
-        const menuItem = await Menu.findById(menuItemId);
+        if (!id) {
+            return res.status(401).json({ message: "User not authenticated", success: false });
+        }
+
+        const menuItem = await Menu.findById(menuId);
         if (!menuItem) {
             return res.status(404).json({ message: "Menu item not found", success: false });
         }
@@ -15,21 +19,22 @@ export const addToCart = async (req, res) => {
         let cart = await Cart.findOne({user:id});
         if(!cart){
             cart = new Cart({user:id, items: [] });
+            await cart.save();
         }
 
-        const existingItem = cart.items.find((item) => item.menuItem.toString() === menuItemId);
+        const existingItem = cart.items.find((item) => item.menuItem.toString() === menuId);
         if(existingItem){
             existingItem.quantity += quantity;
         } else {
-            cart.items.push({menuItem: menuItemId, quantity});
+            cart.items.push({menuItem: menuId, quantity});
         }
 
         await cart.save();
 
         return res.status(200).json({ message: "Item added to cart", success: true, cart });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Failed to add item to cart", success: false });
+        console.error("addToCart error:", error);
+        return res.status(500).json({ message: "Failed to add item to cart", success: false, error: error.message });
     }
 };
 
@@ -52,16 +57,33 @@ export const getCart = async (req, res) => {
 export const removeFromCart = async (req, res) => {
     try{
         const {id} = req.user;
-        const {menuItemId} = req.body;
+        const {menuId} = req.body;
         const cart = await Cart.findOne({user:id});
         if(!cart){
             return res.status(404).json({message: "Cart not found", success: false});
         }
-        cart.items = cart.items.filter(( item ) => item.menuItem.toString() !== menuItemId);
+        cart.items = cart.items.filter(( item ) => item.menuItem.toString() !== menuId);
         await cart.save();
         return res.status(200).json({ message: "Item removed from cart", success: true, cart });
     } catch( error ) {
         console.log(error);
         return res.status(500).json({ message: "Failed to remove item from cart", success: false });
+    }
+}
+
+// Clear cart
+export const clearCart = async (req, res) => {
+    try{
+        const {id} = req.user;
+        const cart = await Cart.findOne({user:id});
+        if(!cart){
+            return res.status(404).json({message: "Cart not found", success: false});
+        }
+        cart.items = [];
+        await cart.save();
+        return res.status(200).json({ message: "Cart cleared", success: true, cart });
+    } catch( error ) {
+        console.log(error);
+        return res.status(500).json({ message: "Failed to clear cart", success: false });
     }
 }

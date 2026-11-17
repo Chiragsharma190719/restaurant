@@ -3,10 +3,11 @@ import { AppContext } from "../context/AppContext";
 import { Link } from "react-router-dom";
 import { ShoppingCart, UserCircle, Calendar, LogOut } from "lucide-react";
 import { toast } from "react-hot-toast";
+import logo from "../assets/logo.png";
 
 const NavBar = () => {
 
-  const { navigate, user, setUser, axios } = useContext(AppContext);
+  const { navigate, user, setUser, axios, cartCount, setCart } = useContext(AppContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -15,6 +16,7 @@ const NavBar = () => {
             const {data} = await axios.post("/api/auth/logout");
             if(data.success){
                 setUser(null);
+                setCart({ items: [] });
                 toast.success("Logged out successfully");
                 navigate("/");
             }
@@ -30,13 +32,14 @@ const NavBar = () => {
           {/* Logo */}
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/" className="text-2xl font-bold text-blue-600">
-              <img src="./logo.png" alt="Logo" className="w-20" />
+              <img src={logo} alt="Logo" className="w-20" />
             </Link>
           </div>
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Home</Link>
             <Link to="/menu" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Menu</Link>
+            <Link to="/book-table" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Book Table</Link>
             <Link to="/about" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">About</Link>
             <Link to="/contact" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Contact</Link>
           </div>
@@ -44,7 +47,7 @@ const NavBar = () => {
           <div className="flex items-center space-x-4">
             <button onClick={()=>navigate("/cart")} className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors">
               <ShoppingCart size={22} className="text-gray-700" />
-              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">3</span>
+              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">{cartCount}</span>
             </button>
 
             <div className="hidden md:block">
@@ -92,6 +95,7 @@ const NavBar = () => {
           <div className="flex flex-col space-y-3">
             <Link to="/" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Home</Link>
             <Link to="/menu" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Menu</Link>
+            <Link to="/book-table" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Book Table</Link>
             <Link to="/about" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">About</Link>
             <Link to="/contact" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Contact</Link>
 

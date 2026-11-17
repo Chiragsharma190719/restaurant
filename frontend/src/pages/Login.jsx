@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 import { AppContext } from '../context/AppContext';
 
 const Login = () => {
-    const {navigate, loading, setLoading, setUser, axios} = useContext(AppContext);
+    const {navigate, loading, setLoading, setUser, axios, fetchCartData} = useContext(AppContext);
 
     const [state, setState] = useState("login")
 
@@ -23,6 +23,7 @@ const Login = () => {
                 toast.success(data.message);
                 setUser(true);
                 localStorage.setItem("user", true);
+                await fetchCartData();
                 navigate("/");
             } else {
                 toast.error(data.message);
